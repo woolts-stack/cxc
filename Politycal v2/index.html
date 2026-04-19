@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLITYCAL | Global Command Interface</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TELA 1: PRÉ-JOGO (SELEÇÃO DE NAÇÃO)
+     ═══════════════════════════════════════════════════════════ -->
+<div id="interface-pre-jogo" class="wrapper">
+    <header>
+        <h1 class="titulo-jogo">POLITYCAL</h1>
+        <p class="versao">GLOBAL COMMAND INTERFACE // ALPHA 2026</p>
+    </header>
+
+    <main class="container-central">
+        <section class="painel-vidro login-box">
+            <h2 class="subtitulo">INICIALIZAR PROTOCOLO</h2>
+
+            <div class="input-group">
+                <label>SELECIONE SUA NAÇÃO:</label>
+                <select id="selecao-pais"></select>
+            </div>
+
+            <div class="painel-info-rapida">
+                <p class="label-painel">DADOS DA NAÇÃO: <span id="nome-pais-label">AGUARDANDO...</span></p>
+                <div class="grid-stats">
+                    <div class="stat-card">
+                        <span class="stat-title">💰 PIB</span>
+                        <span class="stat-valor" id="pib-valor">---</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">👥 POPULAÇÃO</span>
+                        <span class="stat-valor" id="pop-valor">---</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">⚔️ EFETIVO</span>
+                        <span class="stat-valor" id="mil-valor">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-iniciar" class="btn-comando">ASSUMIR COMANDO</button>
+        </section>
+    </main>
+
+    <footer class="barra-status">
+        <div><span class="led-verde"></span> SISTEMAS ONLINE</div>
+        <div>COMANDO CENTRAL ATIVO</div>
+    </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TELA 2: JOGO PRINCIPAL
+     Regra: Esta tela NÃO muda quando novas abas são adicionadas.
+     Para nova aba: (1) botão no aside, (2) div no visor-central.
+     ═══════════════════════════════════════════════════════════ -->
+<div id="interface-jogo" class="wrapper oculto">
+
+    <!-- ── TOP BAR: Recursos Rápidos ───────────────────────── -->
+    <header class="top-bar painel-vidro">
+        <div class="info-nacao">
+            <h2>NAÇÃO: <span id="jogo-nome-pais">---</span></h2>
+            <div class="data-visor">📅 <span id="jogo-data">---</span></div>
+        </div>
+
+        <div class="info-recursos">
+            <span title="População">👥 <span id="jogo-pop">---</span>M</span>
+            <span title="Tesouro Nacional">💰 <span id="jogo-tesouro">---</span></span>
+            <span title="Crescimento do PIB">📈 <span id="jogo-crescimento">---</span></span>
+            <span title="Inflação">🔺 <span id="jogo-inflacao">---</span></span>
+            <span title="Popularidade">🗳️ <span id="jogo-popularidade">---</span></span>
+            <span title="Estabilidade">🏛️ <span id="jogo-estabilidade">---</span></span>
+            <span title="Poder Geopolítico">⚡ <span id="jogo-poder">---</span></span>
+            <span title="Reservas de Ouro">🟡 <span id="jogo-ouro">---</span>t</span>
+            <span title="Urânio">☢️ <span id="jogo-uranio">---</span>t</span>
+        </div>
+
+        <button id="btn-passar-turno" class="btn-turno">PRÓXIMO MÊS ⏭️</button>
+    </header>
+
+    <!-- ── ÁREA PRINCIPAL ──────────────────────────────────── -->
+    <main class="container-dashboard">
+
+        <!-- Painel Lateral de Navegação -->
+        <aside class="painel-acoes painel-vidro">
+            <h3 class="titulo-painel">PAINEL DE ESTADO</h3>
+            <div class="grupo-botoes">
+                <!-- Para nova aba: adicione aqui um botão com onclick="UI.abrirAba('tela-X', this)" -->
+                <button class="btn-acao ativo" onclick="UI.abrirAba('tela-mapa', this)">🌍 VISÃO GLOBAL</button>
+                <button class="btn-acao"       onclick="UI.abrirAba('tela-economia', this)">📊 ECONOMIA</button>
+                <button class="btn-acao"       onclick="UI.abrirAba('tela-diplomacia', this)">🤝 DIPLOMACIA</button>
+                <button class="btn-acao"       onclick="UI.abrirAba('tela-militar', this)">⚔️ FORÇAS ARMADAS</button>
+                <button class="btn-acao"       onclick="UI.abrirAba('tela-projetos', this)">🏗️ PROJETOS</button>
+                <button class="btn-acao"       onclick="UI.abrirAba('tela-intel', this)">🔎 INTELIGÊNCIA</button>
+            </div>
+            <div id="status-alerta" class="status-alerta verde">✅ SITUAÇÃO ESTÁVEL</div>
+        </aside>
+
+        <!-- Visor Central (onde as abas renderizam) -->
+        <section class="visor-central painel-vidro">
+
+            <!-- ── ABA: MAPA ─────────────────────────────── -->
+            <div id="tela-mapa" class="aba-conteudo">
+                <div class="area-mapa-wrapper">
+                    <div id="svg-mapa-container"></div>
+
+                    <!-- Filtros do mapa: para novo filtro, adicione em ui/mapa.js > FILTROS -->
+                    <div id="filtros-mapa">
+                        <button onclick="Mapa.mudarFiltro('global')"      class="btn-filtro">🌐 Global</button>
+                        <button onclick="Mapa.mudarFiltro('diplomacia')"  class="btn-filtro">🤝 Diplomacia</button>
+                        <button onclick="Mapa.mudarFiltro('riqueza')"     class="btn-filtro">💰 Riqueza</button>
+                        <button onclick="Mapa.mudarFiltro('crescimento')" class="btn-filtro">📈 Crescimento</button>
+                        <button onclick="Mapa.mudarFiltro('populacao')"   class="btn-filtro">👥 População</button>
+                        <button onclick="Mapa.toggleExpandido()"           class="btn-expandir">📂 Expandir</button>
+                    </div>
+                </div>
+
+                <!-- Tooltip do país clicado -->
+                <div id="map-tooltip" class="tooltip-mapa oculto">
+                    <h4 id="tooltip-nome">---</h4>
+                    <div class="tooltip-stats">
+                        <p>Relação: <span id="tooltip-relacao">--</span></p>
+                        <p>Status: <span id="tooltip-status">---</span></p>
+                        <p>PIB: <span id="tooltip-pib">---</span></p>
+                    </div>
+                    <div class="tooltip-acoes">
+                        <button onclick="Mapa.acaoTooltip('diplomacia')">📨 Enviar Diplomata</button>
+                        <button onclick="Mapa.acaoTooltip('sancoes')">🚫 Impor Sanções</button>
+                        <button onclick="Mapa.acaoTooltip('exercicio')">⚔️ Exercício Conjunto</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── ABA: ECONOMIA ─────────────────────────── -->
+            <div id="tela-economia" class="aba-conteudo oculto">
+                <h2 class="titulo-aba">📊 DEPARTAMENTO DE ECONOMIA</h2>
+                <p style="opacity:0.5;font-size:0.85rem;">[ Gráficos e controles em desenvolvimento ]</p>
+                <div class="painel-vidro" style="margin-top:20px;padding:20px;max-width:500px;text-align:left;">
+                    <h3 style="color:var(--neon-green)">CONTROLES</h3>
+                    <label style="display:block;margin-bottom:10px;">
+                        Carga Tributária (%):
+                        <input type="range" min="5" max="50" value="25" style="width:200px;display:block;margin-top:5px;"
+                               oninput="Economia.ajustarImpostos(parseInt(this.value)); this.nextElementSibling.textContent = this.value + '%'">
+                        <span>25%</span>
+                    </label>
+                    <button onclick="Economia.ajustarImpostos(20)" class="btn-acao" style="width:auto;padding:8px 15px;">
+                        Reduzir Impostos
+                    </button>
+                    <button onclick="Economia.ajustarImpostos(35)" class="btn-acao" style="width:auto;padding:8px 15px;margin-left:10px;">
+                        Aumentar Impostos
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── ABA: DIPLOMACIA ───────────────────────── -->
+            <div id="tela-diplomacia" class="aba-conteudo oculto">
+                <h2 class="titulo-aba">🤝 RELAÇÕES EXTERIORES</h2>
+                <p style="opacity:0.5;font-size:0.85rem;">[ Tabela de relações em desenvolvimento ]</p>
+            </div>
+
+            <!-- ── ABA: MILITAR ──────────────────────────── -->
+            <div id="tela-militar" class="aba-conteudo oculto">
+                <h2 class="titulo-aba">⚔️ ALTO COMANDO MILITAR</h2>
+                <div class="painel-vidro" style="margin-top:20px;padding:20px;max-width:500px;text-align:left;">
+                    <h3 style="color:var(--neon-green)">GASTOS MILITARES</h3>
+                    <button onclick="Militar.aumentarGastos(0.5)" class="btn-acao" style="width:auto;padding:8px 15px;">
+                        + 0.5% PIB em Defesa
+                    </button>
+                    <button onclick="Militar.aumentarGastos(1.0)" class="btn-acao" style="width:auto;padding:8px 15px;margin-left:10px;">
+                        + 1.0% PIB em Defesa
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── ABA: PROJETOS ─────────────────────────── -->
+            <div id="tela-projetos" class="aba-conteudo oculto">
+                <h2 class="titulo-aba">🏗️ INFRAESTRUTURA NACIONAL</h2>
+                <p style="opacity:0.5;font-size:0.85rem;">[ Sistema de projetos em desenvolvimento ]</p>
+            </div>
+
+            <!-- ── ABA: INTELIGÊNCIA (exemplo de nova aba) ── -->
+            <div id="tela-intel" class="aba-conteudo oculto">
+                <h2 class="titulo-aba">🔎 SERVIÇO DE INTELIGÊNCIA</h2>
+                <p style="opacity:0.5;font-size:0.85rem;">[ Em desenvolvimento ]</p>
+            </div>
+
+            <!-- Para nova aba: copie o bloco acima, mude o id e o conteúdo -->
+        </section>
+    </main>
+
+    <!-- ── TICKER DE NOTÍCIAS ────────────────────────────── -->
+    <div class="news-ticker-container" onclick="UI.abrirModalNoticias()">
+        <div id="ticker-content" class="news-ticker-content">
+            <span class="news-item">📡 SISTEMA ONLINE — Aguardando eventos geopolíticos...</span>
+        </div>
+    </div>
+</div>
+
+<!-- ── BOTÃO FECHAR MAPA EXPANDIDO ──────────────────────── -->
+<button id="btn-fechar-expandido" onclick="Mapa.toggleExpandido()" class="oculto">✕</button>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL: CENTRAL DE INTELIGÊNCIA (Notícias)
+     ═══════════════════════════════════════════════════════════ -->
+<div id="modal-noticias" class="modal-overlay oculto">
+    <div class="modal-conteudo painel-vidro">
+        <div class="modal-header">
+            <h2>📰 CENTRAL DE INTELIGÊNCIA GLOBAL</h2>
+            <button onclick="UI.fecharModalNoticias()" class="btn-fechar">✖</button>
+        </div>
+        <div class="modal-tabs">
+            <button class="btn-tab-noticia ativo">🌍 TODOS</button>
+            <button class="btn-tab-noticia">💰 ECONOMIA</button>
+            <button class="btn-tab-noticia">⚔️ MILITAR</button>
+            <button class="btn-tab-noticia">🤝 DIPLOMACIA</button>
+        </div>
+        <div class="modal-body" id="modal-body-geral">
+            <!-- Preenchido dinamicamente por UI.abrirModalNoticias() -->
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS — Ordem de carregamento É CRÍTICA:
+     1. Banco de dados (data/)
+     2. Estado (core/state.js) — deve ser PRIMEIRO dos cores
+     3. Subsistemas (core/) — dependem do state
+     4. UI (ui/) — depende de tudo
+     ═══════════════════════════════════════════════════════════ -->
+<script src="data/mundo.js"></script>       <!-- 1. Banco de dados imutável -->
+<script src="core/state.js"></script>       <!-- 2. Fonte única de verdade -->
+<script src="core/eventos.js"></script>     <!-- 3a. Eventos (não depende dos outros cores) -->
+<script src="core/economia.js"></script>    <!-- 3b. -->
+<script src="core/diplomacia.js"></script>  <!-- 3c. -->
+<script src="core/militar.js"></script>     <!-- 3d. -->
+<script src="core/motor.js"></script>       <!-- 3e. Orquestrador dos cores -->
+<script src="ui/mapa.js"></script>          <!-- 4a. UI do mapa -->
+<script src="ui/ui.js"></script>            <!-- 4b. UI geral (deve ser último) -->
+</body>
+</html>

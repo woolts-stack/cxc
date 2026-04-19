@@ -95,7 +95,19 @@
             <section class="visor-central painel-vidro">
                 <div id="tela-mapa" class="aba-conteudo">
     <div class="container-mapa-wrapper">
-        <div id="svg-mapa-container"></div>
+        <div class="area-mapa-wrapper">
+    <div id="svg-mapa-container"></div>
+
+    <div id="filtros-mapa">
+        <button onclick="mudarFiltroMapa('global')" class="btn-filtro">Visão Global</button>
+        <button onclick="mudarFiltroMapa('diplomacia')" class="btn-filtro">Diplomacia</button>
+        <button onclick="mudarFiltroMapa('riqueza')" class="btn-filtro">Riquezas (PIB)</button>
+        <button onclick="mudarFiltroMapa('crescimento')" class="btn-filtro">Economia</button>
+        <button onclick="toggleMapaExpandido()" class="btn-expandir">📂 Expandir</button>
+    </div>
+</div>
+
+<button id="btn-fechar-expandido" onclick="toggleMapaExpandido()" class="oculto">X</button>
         
         <div id="map-tooltip" class="tooltip-mapa oculto">
             <h4 id="tooltip-nome">---</h4>

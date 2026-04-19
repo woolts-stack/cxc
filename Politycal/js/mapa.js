@@ -1,131 +1,125 @@
 // js/mapa.js
 
-// 1. FUNÇÃO QUE CARREGA O SVG
+let filtroAtual = 'diplomacia'; 
+let zoomAtual = 1;
+let estaArrastando = false;
+let posX = 0, posY = 0;
+let startX = 0, startY = 0;
+
+// 1. CARREGAR O MAPA
 async function renderizarMapa() {
     const container = document.getElementById('svg-mapa-container');
-    
     try {
         const resposta = await fetch('mundo.svg');
-        if (!resposta.ok) throw new Error("Arquivo mundo.svg não encontrado na pasta!");
-        
         const svgHTML = await resposta.text();
         container.innerHTML = svgHTML;
-
         prepararMapaInterativo();
-        
-        // Ativa o sistema de Zoom e Arrastar
         aplicarNavegacaoMapa();
-
     } catch (erro) {
-        container.innerHTML = `<p style="color:red; text-align:center; padding:50px;">ERRO: ${erro.message}</p>`;
+        console.error("Erro ao carregar o mapa:", erro);
     }
 }
 
-// 2. FUNÇÃO QUE PINTA OS PAÍSES E ADICIONA OS CLIQUES
+// 2. PINTAR E CONFIGURAR CLIQUES
 function prepararMapaInterativo() {
     const pathsPaises = document.querySelectorAll('#svg-mapa-container svg path');
-
     pathsPaises.forEach(path => {
-        const sigla = path.getAttribute('id')?.toUpperCase(); 
-        let nomePais = "Desconhecido";
-        let relacao = 50;
-
-        for (let chave in dbPaises) {
-            if (dbPaises[chave].id === sigla) {
-                nomePais = chave;
-                relacao = dbPaises[chave].diplomacia?.relacao || 50;
-                break;
-            }
-        }
-
+        let nomePais = descobrirNomeDoPais(path);
         if (nomePais !== "Desconhecido") {
-            path.style.fill = calcularCorRelacao(relacao);
+            const dados = dbPaises[nomePais];
+            path.style.fill = calcularCorPorFiltro(dados, filtroAtual);
             path.style.cursor = "pointer";
-            path.addEventListener('click', (event) => cliquePais(event, nomePais));
-            path.addEventListener('mouseenter', () => path.style.filter = 'brightness(1.5)');
-            path.addEventListener('mouseleave', () => path.style.filter = 'none');
+            
+            path.onclick = (event) => cliquePais(event, nomePais);
+            path.onmouseenter = () => path.style.filter = 'brightness(1.5)';
+            path.onmouseleave = () => path.style.filter = 'none';
         } else {
             path.style.fill = "#1a2530"; 
         }
     });
 }
 
-function calcularCorRelacao(relacao) {
-    if (relacao > 50) {
-        const intensidade = (relacao - 50) * 5; 
-        return `rgb(0, ${intensidade + 100}, 100)`;
-    } else {
-        const intensidade = (50 - relacao) * 5;
-        return `rgb(${intensidade + 100}, 0, 50)`;
+// 3. LÓGICA DOS FILTROS
+function mudarFiltroMapa(novoFiltro) {
+    filtroAtual = novoFiltro;
+    prepararMapaInterativo(); 
+}
+
+function calcularCorPorFiltro(dados, filtro) {
+    if (!dados) return "#1a2530";
+    switch(filtro) {
+        case 'global': return "#88A4BC";
+        case 'diplomacia':
+            const rel = dados.diplomacia?.relacao || 50;
+            if (rel > 50) return `rgb(0, ${(rel - 50) * 5 + 100}, 0)`; 
+            if (rel < 50) return `rgb(${(50 - rel) * 5 + 100}, 0, 0)`; 
+            return "#f1c40f"; 
+        case 'riqueza':
+            const pib = dados.economia?.pib || 0;
+            const brilho = Math.min(pib * 50, 200); 
+            return `rgb(0, ${brilho}, ${brilho + 50})`; 
+        case 'crescimento':
+            return (dados.economia?.crescimento || 0) >= 0 ? "#27ae60" : "#c0392b";
+        default: return "#1a2530";
     }
 }
 
-function cliquePais(event, nome) {
-    const tooltip = document.getElementById('map-tooltip');
-    const containerMapa = document.getElementById('svg-mapa-container').getBoundingClientRect();
-    const dados = dbPaises[nome];
+// 4. MODO EXPANDIR
+function toggleMapaExpandido() {
+    const isExpanding = !document.body.classList.contains('mapa-focado');
     
-    let posX = event.clientX - containerMapa.left + 15;
-    let posY = event.clientY - containerMapa.top + 15;
+    document.body.classList.toggle('mapa-focado');
+    document.getElementById('btn-fechar-expandido').classList.toggle('oculto');
     
-    if (posX > containerMapa.width - 180) posX -= 190;
-    if (posY > containerMapa.height - 150) posY -= 160;
-
-    tooltip.style.left = posX + "px";
-    tooltip.style.top = posY + "px";
+    // Se estiver expandindo, reseta posição para o centro
+    if (isExpanding) {
+        zoomAtual = 1;
+        posX = 0;
+        posY = 0;
+    }
     
-    document.getElementById('tooltip-nome').innerText = nome.toUpperCase();
-    document.getElementById('tooltip-relacao').innerText = dados?.diplomacia?.relacao || 50;
-    
-    tooltip.classList.remove('oculto');
+    // Pequeno atraso para o CSS aplicar antes de redesenhar
+    setTimeout(() => {
+        atualizarTransform();
+    }, 50);
 }
 
-// ==========================================
-// 3. SISTEMA DE NAVEGAÇÃO (ZOOM E ARRASTAR)
-// ==========================================
-let zoomAtual = 1;
-let estaArrastando = false;
-let posX = 0, posY = 0;
-let startX = 0, startY = 0;
+// 5. DETECTAR NOME DO PAÍS
+function descobrirNomeDoPais(path) {
+    let elemento = path;
+    let possiveisNomes = new Set();
+    while (elemento && elemento.tagName && elemento.tagName.toLowerCase() !== 'svg') {
+        let id = (elemento.getAttribute('id') || "").toUpperCase();
+        let cls = (elemento.getAttribute('class') || "").toUpperCase();
+        let name = (elemento.getAttribute('name') || "").toUpperCase();
+        if (id) possiveisNomes.add(id);
+        if (cls) possiveisNomes.add(cls);
+        if (name) possiveisNomes.add(name);
+        elemento = elemento.parentNode;
+    }
+    const apelidos = { "RUSSIAN FEDERATION": "RU", "UNITED STATES": "US" };
+    for (let pista of possiveisNomes) {
+        let limpa = pista.split('-')[0].split('_')[0];
+        let idFinal = apelidos[pista] || limpa;
+        for (let chave in dbPaises) {
+            if (idFinal === dbPaises[chave].id.toUpperCase() || pista === chave.toUpperCase()) return chave;
+        }
+    }
+    return "Desconhecido";
+}
 
+// 6. NAVEGAÇÃO
 function aplicarNavegacaoMapa() {
     const container = document.getElementById('svg-mapa-container');
-
-    container.addEventListener('wheel', (e) => {
+    container.onwheel = (e) => {
         e.preventDefault();
-        const sensibilidade = 0.1;
-        zoomAtual = (e.deltaY < 0) ? zoomAtual + sensibilidade : zoomAtual - sensibilidade;
+        zoomAtual = (e.deltaY < 0) ? zoomAtual + 0.1 : zoomAtual - 0.1;
         zoomAtual = Math.min(Math.max(0.5, zoomAtual), 5);
         atualizarTransform();
-    });
-
-    container.addEventListener('mousedown', (e) => {
-        if (e.target.tagName === 'path') return;
-        estaArrastando = true;
-        startX = e.clientX - posX;
-        startY = e.clientY - posY;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-        if (!estaArrastando) return;
-        posX = e.clientX - startX;
-        posY = e.clientY - startY;
-        atualizarTransform();
-    });
-
-    window.addEventListener('mouseup', () => { estaArrastando = false; });
+    };
 }
 
 function atualizarTransform() {
     const svg = document.querySelector('#svg-mapa-container svg');
-    if(svg) {
-        svg.style.transform = `translate(${posX}px, ${posY}px) scale(${zoomAtual})`;
-    }
+    if(svg) svg.style.transform = `translate(${posX}px, ${posY}px) scale(${zoomAtual})`;
 }
-
-// Fechar balão ao clicar fora
-document.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'path' && !e.target.closest('#map-tooltip')) {
-        document.getElementById('map-tooltip').classList.add('oculto');
-    }
-});
