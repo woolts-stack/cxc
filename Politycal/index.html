@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLITYCAL | Global Command Interface</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="interface-pre-jogo" class="wrapper">
+        <header class="main-header">
+            <h1 class="titulo-jogo">POLITYCAL</h1>
+            <p class="versao">GLOBAL COMMAND INTERFACE // JAN 2026 ALPHA</p>
+        </header>
+
+        <main class="container-central">
+            <section class="painel-vidro login-box">
+                <h2 class="subtitulo">INICIALIZAR PROTOCOLO</h2>
+                
+                <div class="input-group">
+                    <label>SELECIONE SUA NAÇÃO:</label>
+                    <select id="selecao-pais" onchange="atualizarPreview()">
+                    </select>
+                </div>
+
+                <div class="painel-info-rapida">
+                    <p class="label-painel">NOTÍCIAS RÁPIDAS ( <span id="nome-pais-label">AGUARDANDO...</span> )</p>
+                    <div class="grid-stats">
+                        <div class="stat-card">
+                            <i class="icon">💰</i>
+                            <span class="stat-title">ECONOMIA</span>
+                            <span class="stat-sub">RESUMO DO PIB</span>
+                            <span class="stat-valor" id="pib-valor">---</span>
+                        </div>
+                        <div class="stat-card">
+                            <i class="icon">👥</i>
+                            <span class="stat-title">POPULAÇÃO</span>
+                            <span class="stat-sub">TOTAL</span>
+                            <span class="stat-valor" id="pop-valor">---</span>
+                        </div>
+                        <div class="stat-card">
+                            <i class="icon">⚔️</i>
+                            <span class="stat-title">PODER MILITAR</span>
+                            <span class="stat-sub">EFETIVO ATIVO</span>
+                            <span class="stat-valor" id="mil-valor">---</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-iniciar" class="btn-comando">ASSUMIR COMANDO</button>
+            </section>
+        </main>
+
+        <footer class="barra-status">
+            <div class="status-item"><span class="led-verde"></span> SISTEMAS ONLINE</div>
+            <div class="status-item">LOCALIZAÇÃO: COMANDO CENTRAL</div>
+        </footer>
+    </div>
+
+    <div id="interface-jogo" class="wrapper oculto">
+        
+        <header class="top-bar painel-vidro">
+            <div class="info-nacao">
+                <h2>NAÇÃO: <span id="jogo-nome-pais">---</span></h2>
+                <div class="data-visor">CALENDÁRIO: <span id="jogo-data">JANEIRO 2026</span></div>
+            </div>
+            
+            <div class="info-recursos">
+                <span title="População">👥 <span id="jogo-pop">---</span>M</span>
+                <span title="Tesouro Nacional">💰 $<span id="jogo-tesouro">---</span>B</span>
+                <span title="Crescimento do PIB">📈 <span id="jogo-crescimento">---</span>%</span>
+                <span title="Reservas de Ouro">🟡 <span id="jogo-ouro">---</span>t</span>
+                <span title="Estoque de Urânio">☢️ <span id="jogo-uranio">---</span>t</span>
+            </div>
+            
+            <button id="btn-passar-turno" class="btn-turno">PRÓXIMO MÊS ⏭️</button>
+        </header>
+
+        <main class="container-dashboard">
+            
+            <aside class="painel-acoes painel-vidro">
+                <h3 class="titulo-painel">PAINEL DE ESTADO</h3>
+                <div class="grupo-botoes">
+                    <button class="btn-acao ativo" id="btn-tab-mapa" onclick="abrirAba('tela-mapa', this)">🌍 VISÃO GLOBAL</button>
+                    <button class="btn-acao" id="btn-tab-eco" onclick="abrirAba('tela-economia', this)">📊 ECONOMIA</button>
+                    <button class="btn-acao" id="btn-tab-dip" onclick="abrirAba('tela-diplomacia', this)">🤝 DIPLOMACIA</button>
+                    <button class="btn-acao" id="btn-tab-mil" onclick="abrirAba('tela-militar', this)">⚔️ FORÇAS ARMADAS</button>
+                    <button class="btn-acao" id="btn-tab-proj" onclick="abrirAba('tela-projetos', this)">🏗️ PROJETOS</button>
+                </div>
+                <div class="status-alerta verde">NENHUMA CRISE ATIVA</div>
+            </aside>
+
+            <section class="visor-central painel-vidro">
+                <div id="tela-mapa" class="aba-conteudo">
+    <div class="container-mapa-wrapper">
+        <div id="svg-mapa-container"></div>
+        
+        <div id="map-tooltip" class="tooltip-mapa oculto">
+            <h4 id="tooltip-nome">---</h4>
+            <div class="tooltip-stats">
+                <p>Relacionamento: <span id="tooltip-relacao">--</span>%</p>
+                <p>Status: <span id="tooltip-status">Desconhecido</span></p>
+            </div>
+            <div class="tooltip-acoes">
+                <button onclick="interagirPais('diplomacia')">Enviar Diplomata</button>
+                <button onclick="interagirPais('espionagem')">Espionagem</button>
+            </div>
+        </div>
+    </div>
+</div>
+                <div id="tela-economia" class="aba-conteudo oculto"><h2 class="titulo-aba">DEPARTAMENTO DE ECONOMIA</h2></div>
+                <div id="tela-diplomacia" class="aba-conteudo oculto"><h2 class="titulo-aba">RELAÇÕES EXTERIORES</h2></div>
+                <div id="tela-militar" class="aba-conteudo oculto"><h2 class="titulo-aba">ALTO COMANDO MILITAR</h2></div>
+                <div id="tela-projetos" class="aba-conteudo oculto"><h2 class="titulo-aba">INFRAESTRUTURA NACIONAL</h2></div>
+            </section>
+        </main>
+
+        <div class="news-ticker-container" onclick="abrirModalNoticias()">
+            <div class="news-ticker-content">
+                <span class="news-item">🔴 [URGENTE] Tensão diplomática no Leste Europeu aumenta preço do petróleo global...</span>
+                <span class="news-item">📈 [ECONOMIA] Mercado asiático fecha em alta após novos acordos comerciais...</span>
+                <span class="news-item">⚠️ [CLIMA] Seca extrema afeta colheitas na América do Sul...</span>
+                <span class="news-item">🌐 [DIPLOMACIA] Cúpula global termina sem acordo sobre redução de arsenais...</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="modal-noticias" class="modal-overlay oculto">
+        <div class="modal-conteudo painel-vidro">
+            <div class="modal-header">
+                <h2>📰 CENTRAL DE INTELIGÊNCIA GLOBAL</h2>
+                <button onclick="fecharModalNoticias()" class="btn-fechar">✖</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="btn-tab-noticia ativo">🌍 GERAIS</button>
+                <button class="btn-tab-noticia">💰 ECONOMIA</button>
+                <button class="btn-tab-noticia">⚔️ MILITAR</button>
+                <button class="btn-tab-noticia">👥 SOCIAIS</button>
+            </div>
+            <div class="modal-body">
+                <p class="alerta-noticia"><span class="data-noticia">[MAIO 2026]</span> Relatórios indicam movimentação militar atípica em zonas de fronteira.</p>
+                <p class="alerta-noticia"><span class="data-noticia">[ABRIL 2026]</span> Fórum Econômico alerta para possível recessão em potências europeias.</p>
+                <p class="alerta-noticia"><span class="data-noticia">[MARÇO 2026]</span> OPEP anuncia corte na produção de barris para estabilizar preços.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mundo.js"></script>
+    <script src="js/motor.js"></script>
+    <script src="js/mapa.js"></script> <script src="js/ui.js"></script>
+</body>
+</html>

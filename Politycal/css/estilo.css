@@ -1,0 +1,247 @@
+:root {
+    --neon-blue: #00f2ff;
+    --neon-green: #39ff14;
+    --glass-bg: rgba(10, 20, 30, 0.7);
+    --border-glass: rgba(255, 255, 255, 0.1);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #050a0f; 
+    color: white;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+}
+
+.wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px;
+    background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
+}
+
+.titulo-jogo { font-size: 4rem; letter-spacing: 15px; margin: 0; font-weight: 700; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+.versao { font-family: 'JetBrains Mono', monospace; color: var(--neon-blue); font-size: 0.9rem; letter-spacing: 2px; }
+
+.painel-vidro {
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--border-glass);
+    padding: 30px;
+    border-radius: 5px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.login-box { width: 550px; }
+.subtitulo { font-size: 1.2rem; letter-spacing: 3px; text-align: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 15px; margin-top: 0; }
+
+.painel-info-rapida { margin: 25px 0; padding: 15px; background: rgba(0, 255, 100, 0.05); border: 1px solid rgba(0, 255, 100, 0.2); }
+.label-painel { font-size: 0.7rem; color: var(--neon-green); margin-bottom: 15px; font-weight: bold; }
+.grid-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.stat-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.stat-title { font-size: 0.6rem; opacity: 0.7; }
+.stat-sub { font-size: 0.5rem; color: var(--neon-blue); margin-bottom: 5px; }
+.stat-valor { font-family: 'JetBrains Mono'; font-size: 1.1rem; color: var(--neon-green); }
+
+.btn-comando { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); font-weight: bold; cursor: pointer; transition: 0.4s; }
+.btn-comando:hover { background: var(--neon-blue); color: black; box-shadow: 0 0 30px var(--neon-blue); }
+
+.barra-status { width: 100%; display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 0.8rem; opacity: 0.6; }
+.led-verde { display: inline-block; width: 8px; height: 8px; background: var(--neon-green); border-radius: 50%; box-shadow: 0 0 10px var(--neon-green); }
+
+/* ========================================= */
+/* TELA PRINCIPAL DO JOGO                    */
+/* ========================================= */
+.oculto { display: none !important; }
+
+.top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; margin-bottom: 20px; height: 80px; }
+.info-nacao h2 { margin: 0; color: var(--neon-blue); letter-spacing: 2px; }
+.data-visor { color: var(--neon-green); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin-top: 5px; letter-spacing: 1px; }
+.info-recursos { display: flex; gap: 30px; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; }
+
+.btn-turno { background: rgba(0, 242, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 10px 20px; font-weight: bold; cursor: pointer; transition: 0.3s; font-family: 'JetBrains Mono', monospace; }
+.btn-turno:hover { background: var(--neon-blue); color: black; box-shadow: 0 0 20px var(--neon-blue); }
+
+.container-dashboard { display: flex; gap: 20px; width: 100%; height: calc(100vh - 140px); }
+
+.painel-acoes { width: 300px; display: flex; flex-direction: column; justify-content: space-between; }
+.titulo-painel { color: var(--neon-green); border-bottom: 1px solid rgba(57, 255, 20, 0.3); padding-bottom: 10px; margin-top: 0; font-size: 1rem; letter-spacing: 2px; text-align: center; }
+.grupo-botoes { display: flex; flex-direction: column; gap: 15px; }
+
+.btn-acao { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 15px; text-align: left; font-family: 'Inter', sans-serif; font-weight: bold; cursor: pointer; transition: 0.2s; border-radius: 4px; }
+.btn-acao:hover { background: rgba(0, 242, 255, 0.2); border-color: var(--neon-blue); color: var(--neon-blue); padding-left: 25px; }
+.btn-acao.ativo { background: rgba(0, 242, 255, 0.2); border-color: var(--neon-blue); color: var(--neon-blue); border-left: 5px solid var(--neon-blue); }
+
+.status-alerta { text-align: center; padding: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: bold; border-radius: 3px; }
+.status-alerta.verde { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); border: 1px solid var(--neon-green); }
+
+.visor-central { flex-grow: 1; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; }
+.aba-conteudo { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.3s ease-in-out; }
+.titulo-aba { color: var(--neon-blue); letter-spacing: 3px; margin-bottom: 20px; }
+
+/* Ajuste do visor para suportar zoom e arrastar */
+#svg-mapa-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; 
+    cursor: grab; /* Mãozinha de arrastar */
+    background: radial-gradient(circle, rgba(0,242,255,0.05) 0%, rgba(0,0,0,0.8) 100%);
+}
+
+#svg-mapa-container:active {
+    cursor: grabbing;
+}
+
+#svg-mapa-container svg {
+    width: 100%;
+    height: auto;
+    transition: transform 0.1s ease-out; 
+    transform-origin: center;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ========================================= */
+/* BARRA DE NOTÍCIAS (TICKER) E MODAL        */
+/* ========================================= */
+
+/* Ajuste na barra superior para caber mais itens */
+.info-recursos { font-size: 0.95rem; gap: 20px; }
+.info-recursos span { cursor: help; } /* Muda o mouse para uma interrogação ao passar em cima */
+
+/* Ajuste de altura do dashboard para caber o rodapé */
+.container-dashboard { height: calc(100vh - 180px); margin-bottom: 10px;}
+
+/* O Letreiro Correndo */
+/* RODAPÉ DE NOTÍCIAS (TICKER) - AJUSTADO */
+.news-ticker-container {
+    width: 100%;
+    height: 35px; 
+    background: rgba(0, 0, 0, 0.9);
+    border-top: 1px solid var(--neon-blue);
+    display: flex;
+    align-items: center; 
+    overflow: hidden;
+    position: fixed; 
+    bottom: 0;
+    left: 0;
+    z-index: 9999; 
+    cursor: pointer;
+}
+
+.news-ticker-content {
+    display: flex;
+    white-space: nowrap;
+    animation: tickerAnim 40s linear infinite; 
+    line-height: 35px; 
+}
+
+.news-item {
+    padding: 0 60px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: #e0e0e0;
+    letter-spacing: 1px;
+}
+
+@keyframes tickerAnim {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Fundo Escuro do Modal */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+
+.modal-conteudo { width: 700px; max-height: 80vh; display: flex; flex-direction: column; }
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px; }
+.modal-header h2 { margin: 0; color: var(--neon-blue); font-size: 1.2rem; letter-spacing: 2px;}
+
+.btn-fechar { background: transparent; border: none; color: #ff3333; font-size: 1.5rem; cursor: pointer; font-weight: bold;}
+.btn-fechar:hover { color: white; text-shadow: 0 0 10px #ff3333; }
+
+.modal-tabs { display: flex; gap: 10px; margin: 20px 0; }
+.btn-tab-noticia { flex-grow: 1; background: transparent; border: 1px solid var(--border-glass); color: white; padding: 10px; cursor: pointer; transition: 0.3s; }
+.btn-tab-noticia:hover, .btn-tab-noticia.ativo { background: rgba(0, 242, 255, 0.2); border-color: var(--neon-blue); color: var(--neon-blue); }
+
+.modal-body { background: rgba(0,0,0,0.5); padding: 20px; border-radius: 5px; overflow-y: auto; flex-grow: 1; text-align: left;}
+.alerta-noticia { border-left: 3px solid var(--neon-blue); padding-left: 10px; margin-bottom: 15px; font-family: 'Inter', sans-serif;}
+.data-noticia { color: var(--neon-green); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; margin-right: 5px;}
+/* ========================================= */
+/* ESTILIZAÇÃO DO MAPA INTERATIVO            */
+/* ========================================= */
+
+.container-mapa-wrapper {
+    position: relative;
+    width: 95%;
+    height: 90%;
+    background: #050a0f;
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#svg-mapa-container svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.1));
+}
+
+/* Estilo padrão de cada país */
+.pais-svg {
+    fill: #1a2530; /* Cinza azulado para países neutros */
+    stroke: #00f2ff22;
+    stroke-width: 0.5;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.pais-svg:hover {
+    stroke: var(--neon-blue);
+    stroke-width: 1.5;
+    filter: brightness(1.5);
+}
+
+/* Tooltip (Balão de Opções do Mapa) */
+.tooltip-mapa {
+    position: absolute;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--neon-blue);
+    padding: 10px; /* Reduzi o padding de 15px para 10px */
+    border-radius: 5px;
+    z-index: 2000;
+    pointer-events: auto;
+    min-width: 150px; /* Reduzi de 200px para 150px */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    font-size: 0.8rem; /* Letra um pouco menor */
+}
+
+.tooltip-mapa h4 { margin: 0 0 5px 0; color: var(--neon-blue); border-bottom: 1px solid var(--border-glass); padding-bottom: 5px; font-size: 0.9rem;}
+.tooltip-stats { font-size: 0.75rem; margin-bottom: 8px; }
+.tooltip-stats p { margin: 3px 0; }
+.tooltip-acoes { display: flex; flex-direction: column; gap: 5px; }
+
+.tooltip-acoes button {
+    background: rgba(0, 242, 255, 0.1);
+    border: 1px solid var(--neon-blue);
+    color: white;
+    font-size: 0.7rem;
+    padding: 4px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.tooltip-acoes button:hover { background: var(--neon-blue); color: black; }
